@@ -29,7 +29,7 @@ router.post('/api/adCreate', upload.any(), gatekeeper, async (req, res) => {
 	});
 });
 
-router.get('/api/ads/', gatekeeper, async (req, res) => {
+router.get('/api/ads/', async (req, res) => {
 	try {
 		Ad.find({ isActive: true }, (err, docs) => {
 			if (err) {
@@ -41,7 +41,7 @@ router.get('/api/ads/', gatekeeper, async (req, res) => {
 		res.status(422).send('Could not fetch the ads.');
 	}
 });
-router.get('/api/ads/:adId', gatekeeper, async (req, res) => {
+router.get('/api/ads/:adId', async (req, res) => {
 	try {
 		Ad.findById(req.params.adId, (err, doc) => {
 			if (err) {
@@ -52,6 +52,21 @@ router.get('/api/ads/:adId', gatekeeper, async (req, res) => {
 	} catch (err) {
 		res.status(422).send('Could not fetch the ad');
 	}
+});
+
+/**
+ * TODO: work on these routes
+ */
+router.get('/api/ads/category/:category', async (req, res) => {
+	res.send(req.params.category);
+});
+
+router.get('/api/ads/q/:q', async (req, res) => {
+	res.send(req.params.q);
+});
+
+router.get('/api/ads/f/:f', async (req, res) => {
+	res.send(req.params.f);
 });
 
 module.exports = router;
