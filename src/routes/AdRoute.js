@@ -2,7 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const gatekeeper = require('../middlewares/gatekeeper');
-const User = mongoose.model('User');
 const Ad = mongoose.model('Ad');
 const router = express.Router();
 
@@ -57,14 +56,15 @@ router.get('/api/ads/:adId', async (req, res) => {
 /**
  * TODO: work on these routes
  */
+//category
 router.get('/api/ads/category/:category', async (req, res) => {
 	res.send(req.params.category);
 });
-
+//search
 router.get('/api/ads/q/:q', async (req, res) => {
 	res.send(req.params.q);
 });
-
+//filter
 router.get('/api/ads/f/:f', async (req, res) => {
 	res.send(req.params.f);
 });
