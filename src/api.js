@@ -1,11 +1,11 @@
 require('./models/User');
-const authRoutes = require('./routes/AuthRoute');
 const hostname = 'localhost';
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-
-//set up db connection
+const path = require('path');
+global.__baseDir = __dirname;
+const authRoutes = require('./routes/AuthRoute');
 
 const mongoUri = 'mongodb://localhost/roylen';
 mongoose.connect(mongoUri, {
@@ -26,8 +26,14 @@ app.get('/', (req, res) => {
 	res.send('Hi there from the api!!');
 });
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb', extended: true }));
 app.use(authRoutes);
+app.use(
+	'/uploads',
+	express.static(path.join(__dirname, 'uploads'), {
+		extensions: ['jpg', 'jpeg', 'png']
+	})
+);
 app.listen(3000, hostname, () => {
 	console.log('listening on port 3000');
 });

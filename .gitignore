@@ -1,6 +1,8 @@
 # private info
 keys.js
 .DS_Store
+# user generated
+uploads
 
 # Logs
 logs

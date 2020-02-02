@@ -5,6 +5,34 @@ const jwt = require('jsonwebtoken');
 const JWTKey = require('../env/keys');
 const gatekeeper = require('../middlewares/gatekeeper');
 const User = mongoose.model('User');
+const multer = require('multer');
+const uploadURI = '/uploads/avatars';
+const uploadDir = `${__baseDir}${uploadURI}`;
+
+const storage = multer.diskStorage({
+	destination: function(req, file, cb) {
+		cb(null, uploadDir);
+	},
+	filename: function(req, file, cb) {
+		cb(null, Date.now() + file.originalname);
+	}
+});
+
+const fileFilter = (req, file, cb) => {
+	if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+		cb(null, true);
+	} else {
+		cb(null, false);
+	}
+};
+
+const upload = multer({
+	storage: storage,
+	limits: {
+		fileSize: 1024 * 1024 * 5
+	},
+	fileFilter: fileFilter
+});
 
 router.post('/api/signup', async (req, res) => {
 	const { email, password, screenName } = req.body;
@@ -37,10 +65,30 @@ router.post('/api/signin', async (req, res) => {
 	}
 });
 
-router.post('/api/profile', gatekeeper, async (req, res) => {
-	const { _id, email, screenName } = req.body;
-	console.log(req.body);
-	console.log(req.user);
+router.post('/api/profile', upload.any(), gatekeeper, async (req, res) => {
+	try {
+		let imagePath = null;
+		if (req.files && req.files.length > 0) {
+			imagePath = uploadURI + '/' + req.files[0]['filename'];
+		}
+		let email = req.user.email;
+		if (req.body['email'] != '') {
+			email = req.body['email'];
+		}
+		const q = { _id: req.user._id };
+		const newData = { email, avatar: imagePath };
+		User.findByIdAndUpdate(
+			q,
+			newData,
+			{ useFindAndModify: false },
+			(err, doc) => {
+				if (err) return send422(res);
+				return res.send({ success: 1, avatar: doc.avatar });
+			}
+		);
+	} catch (err) {
+		return send422(res);
+	}
 });
 
 const send422 = res => {
