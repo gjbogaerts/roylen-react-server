@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const AdSchema = new mongoose.Schema({
-	_userId: {
+	creator: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'User'
 	},
