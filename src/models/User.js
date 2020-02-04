@@ -24,7 +24,8 @@ const UserSchema = new mongoose.Schema({
 	},
 	avatar: {
 		type: String
-	}
+	},
+	ads: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Ad' }]
 });
 
 UserSchema.pre('save', function(next) {

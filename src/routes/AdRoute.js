@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 const gatekeeper = require('../middlewares/gatekeeper');
 const Ad = mongoose.model('Ad');
+const User = mongoose.model('User');
 const router = express.Router();
 
 const uploadURI = '/uploads/pics';
@@ -15,8 +16,9 @@ router.post('/api/adCreate', upload.any(), gatekeeper, async (req, res) => {
 	req.files.map(file => {
 		return pics.push(uploadURI + '/' + file.filename);
 	});
+
 	const ad = new Ad({
-		_userId: _id,
+		creator: _id,
 		title,
 		description,
 		virtualPrice,
@@ -26,30 +28,33 @@ router.post('/api/adCreate', upload.any(), gatekeeper, async (req, res) => {
 	await ad.save({}, (err, doc) => {
 		res.send(doc);
 	});
+	User.populate(ad);
 });
 
 router.get('/api/ads/', async (req, res) => {
 	try {
-		Ad.find({ isActive: true }, (err, docs) => {
-			if (err) {
-				return res.send('Error connecting to the database');
-			}
-			res.send(docs);
-		});
+		Ad.find({ isActive: true })
+			.populate('creator')
+			.exec((err, docs) => {
+				if (err) {
+					return res.send('Error connecting to the database');
+				}
+				res.send(docs);
+			});
 	} catch (err) {
 		res.status(422).send('Could not fetch the ads.');
 	}
 });
 router.get('/api/ads/:adId', async (req, res) => {
 	try {
-		Ad.findById(req.params.adId, (err, doc) => {
-			if (err) {
-				return res.send('Error connecting to the database');
-			}
-			res.send(doc);
-		});
+		Ad.findById(req.params.adId)
+			.populate('creator')
+			.exec((err, doc) => {
+				if (err) res.status(422).send(err, 'Could not fetch the ad');
+				res.send(doc);
+			});
 	} catch (err) {
-		res.status(422).send('Could not fetch the ad');
+		res.status(422).send(err, 'Could not fetch the ad');
 	}
 });
 
