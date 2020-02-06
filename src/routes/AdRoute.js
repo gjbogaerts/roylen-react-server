@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-
+const util = require('util');
 const gatekeeper = require('../middlewares/gatekeeper');
 const Ad = mongoose.model('Ad');
 const User = mongoose.model('User');
@@ -10,12 +10,18 @@ const uploadURI = '/uploads/pics';
 const upload = require('../utils/uploads');
 
 router.post('/api/adCreate', upload.any(), gatekeeper, async (req, res) => {
-	const { _id } = req.user;
-	const { title, description, virtualPrice, category } = req.body;
+	// console.log(req.files);
+	// console.log(JSON.parse(JSON.stringify(req.body)));
+
+	const { title, description, virtualPrice, category, creator } = req.body;
+	// console.log(req.user._id);
+	// console.log(creator);
 	const pics = [];
 	req.files.map(file => {
 		return pics.push(uploadURI + '/' + file.filename);
 	});
+
+	const { _id } = req.user;
 
 	const ad = new Ad({
 		creator: _id,
@@ -25,10 +31,11 @@ router.post('/api/adCreate', upload.any(), gatekeeper, async (req, res) => {
 		category,
 		pics
 	});
+	// console.log(ad);
 	await ad.save({}, (err, doc) => {
-		res.send(doc);
+		if (err) res.status(422).send(`Unable to create ad: ${err}`);
+		res.send({ msg: 'Success, ad created', doc });
 	});
-	User.populate(ad);
 });
 
 router.get('/api/ads/', async (req, res) => {
