@@ -41,6 +41,7 @@ router.post('/api/adCreate', upload.any(), gatekeeper, async (req, res) => {
 router.get('/api/ads/', async (req, res) => {
 	try {
 		Ad.find({ isActive: true })
+			.sort({ dateAdded: -1 })
 			.populate('creator')
 			.exec((err, docs) => {
 				if (err) {
