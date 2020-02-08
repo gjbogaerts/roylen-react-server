@@ -1,5 +1,6 @@
 require('./models/User');
 require('./models/Ad');
+require('./models/Message');
 const hostname = 'localhost';
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -8,6 +9,7 @@ const path = require('path');
 global.__baseDir = __dirname;
 const authRoutes = require('./routes/AuthRoute');
 const adRoutes = require('./routes/AdRoute');
+const msgRoutes = require('./routes/MessageRoute.js');
 
 const mongoUri = 'mongodb://localhost/roylen';
 mongoose.connect(mongoUri, {
@@ -31,6 +33,7 @@ app.get('/', (req, res) => {
 app.use(bodyParser.json({ limit: '50mb', extended: true }));
 app.use(authRoutes);
 app.use(adRoutes);
+app.use(msgRoutes);
 app.use(
 	'/uploads',
 	express.static(path.join(__dirname, 'uploads'), {
