@@ -4,5 +4,5 @@ App for the exchange of children's toys and clothings. Made with love for the pl
 
 # deployment
 
-- create an uploads/pics folder in root, make it writeable
+- create an uploads/pics folder in src, make it writeable
 - create an env/keys.js file in root, with your auth keys etc.
