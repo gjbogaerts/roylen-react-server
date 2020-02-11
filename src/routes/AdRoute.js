@@ -13,7 +13,14 @@ router.post('/api/adCreate', upload.any(), gatekeeper, async (req, res) => {
 	// console.log(req.files);
 	// console.log(JSON.parse(JSON.stringify(req.body)));
 
-	const { title, description, virtualPrice, category, creator } = req.body;
+	const {
+		title,
+		description,
+		virtualPrice,
+		category,
+		creator,
+		adNature
+	} = req.body;
 	// console.log(req.user._id);
 	// console.log(creator);
 	const pics = [];
@@ -29,7 +36,8 @@ router.post('/api/adCreate', upload.any(), gatekeeper, async (req, res) => {
 		description,
 		virtualPrice,
 		category,
-		pics
+		pics,
+		adNature
 	});
 	// console.log(ad);
 	await ad.save({}, (err, doc) => {
