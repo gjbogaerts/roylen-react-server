@@ -70,16 +70,33 @@ router.get('/api/ads/:adId', async (req, res) => {
  * TODO: work on these routes
  */
 //category
-router.get('/api/ads/category/:category', async (req, res) => {
-	res.send(req.params.category);
+router.get('/api/ads/c/:category', async (req, res) => {
+	try {
+		Ad.find({ category: req.params.category, isActive: true })
+			.populate('creator')
+			.sort('-dateAdded')
+			.exec((err, doc) => {
+				if (err) return res.status(422).send(err, 'Could not fetch the ads');
+				res.send(doc);
+			});
+	} catch (err) {
+		res.status(422).send(err, 'Could not fetch the ads');
+	}
 });
 //search
 router.get('/api/ads/q/:q', async (req, res) => {
-	res.send(req.params.q);
-});
-//filter
-router.get('/api/ads/f/:f', async (req, res) => {
-	res.send(req.params.f);
+	try {
+		Ad.find({ $text: { $search: req.params.q } })
+			.where({ isActive: true })
+			.populate('creator')
+			.sort('-dateAdded')
+			.exec((err, doc) => {
+				if (err) return res.status(422).send(err, 'Could not fetch the ads');
+				res.send(doc);
+			});
+	} catch (err) {
+		res.status(422).send(err, 'Could not fetch the ads');
+	}
 });
 
 module.exports = router;

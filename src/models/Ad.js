@@ -17,12 +17,14 @@ const AdSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 		minlength: 5,
-		maxlength: 50
+		maxlength: 50,
+		text: true
 	},
 	description: {
 		type: String,
 		required: true,
-		maxlength: 5200
+		maxlength: 5200,
+		text: true
 	},
 	virtualPrice: {
 		type: Number,
