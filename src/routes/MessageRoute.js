@@ -13,7 +13,7 @@ router.get('/api/message/:userId', gatekeeper, async (req, res) => {
 				.populate('fromId')
 				.sort('-dateSent')
 				.exec((err, doc) => {
-					console.log(doc);
+					// console.log(doc);
 					if (err) {
 						return res
 							.status(422)
@@ -76,7 +76,7 @@ router.post('/api/message', gatekeeper, async (req, res) => {
 			res.status(200).send('Success!');
 		}
 	});
-	console.log(msg);
+	// console.log(msg);
 });
 
 module.exports = router;
