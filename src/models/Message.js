@@ -27,6 +27,10 @@ const MessageSchema = new mongoose.Schema({
 	isRead: {
 		type: Boolean,
 		default: false
+	},
+	dateSent: {
+		type: Date,
+		default: Date.now
 	}
 });
 
