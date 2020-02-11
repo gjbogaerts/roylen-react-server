@@ -6,17 +6,21 @@ const Message = mongoose.model('Message');
 
 router.get('/api/message/:userId', gatekeeper, async (req, res) => {
 	if (req.user._id != req.params.userId) {
-		res.status(422).send('You are not authorized to get these messages');
+		return res.status(422).send('You are not authorized to get these messages');
 	} else {
 		try {
-			Message.find({ toId: req.user._id }, (err, doc) => {
-				if (err) {
-					return res
-						.status(422)
-						.send('Something went wrong trying to pick up your messages.');
-				}
-				res.status(200).send(doc);
-			});
+			Message.find({ toId: req.user._id, isRead: false })
+				.populate('fromId')
+				.sort('-dateSent')
+				.exec((err, doc) => {
+					console.log(doc);
+					if (err) {
+						return res
+							.status(422)
+							.send('Something went wrong trying to pick up your messages.');
+					}
+					res.status(200).send(doc);
+				});
 		} catch (err) {
 			res
 				.status(422)
@@ -24,6 +28,30 @@ router.get('/api/message/:userId', gatekeeper, async (req, res) => {
 					'Something went wrong when we tried to pick up your messages. Please try again later.'
 				);
 		}
+	}
+});
+
+router.post('/api/message/markRead/', gatekeeper, async (req, res) => {
+	try {
+		Message.updateOne(
+			{ _id: req.body.messageId },
+			{ isRead: true },
+			(err, doc) => {
+				if (err) {
+					return res
+						.status(422)
+						.send(
+							`Unable to process your request. Please try again later: ${err}`
+						);
+				} else {
+					return res.status(200).send('Request executed');
+				}
+			}
+		);
+	} catch (err) {
+		return res
+			.status(422)
+			.send(`Unable to process your request. Please try again later: ${err}`);
 	}
 });
 
