@@ -22,6 +22,9 @@ const UserSchema = new mongoose.Schema({
 		default: 100,
 		required: true
 	},
+	pwResetKey: {
+		type: String
+	},
 	avatar: {
 		type: String
 	},
