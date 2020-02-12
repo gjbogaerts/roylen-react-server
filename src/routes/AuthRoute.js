@@ -26,8 +26,33 @@ router.post('/api/signup', async (req, res) => {
 	}
 });
 
+router.post('/api/conformResetPassword', async (req, res) => {
+	const pwResetKey = req.body.key;
+	const password = req.body.pw;
+	try {
+		const user = await User.findOne({ pwResetKey });
+		if (!user) {
+			return res.status(422).send({ error: 'No user found with this key' });
+		}
+		user.password = password;
+		user.pwResetKey = '';
+		user.save({}, (err, doc) => {
+			if (err) return res.status(422).send({ error: err });
+			return res.status(200).send({
+				success: 1,
+				msg:
+					'Your password has been reset. You can now login with your new password',
+				doc
+			});
+		});
+	} catch (err) {
+		res.status(422).send({ error: err.message });
+	}
+});
+
 router.post('/api/resetPassword', async (req, res) => {
 	const { email } = req.body;
+	// console.log(req.body);
 	const secretKey = crypto.randomBytes(20).toString('hex');
 	try {
 		const user = User.updateOne(
@@ -40,22 +65,23 @@ router.post('/api/resetPassword', async (req, res) => {
 						to: email,
 						from: 'do-not-reply@roylen.ga',
 						subject: 'Reset your password',
-						text: `Dear Roylen-user,\n\nsomebody, maybe you, has requested a new password to access the Roylen app. Please open the app, click the 'reset password' button on the login-page, and use the key provided here to reset your password.\n\n__________________________\n\nKey:${secretKey}\n\n__________________________With kind regards,\nThe Roylen Team\n\nPS: you didn't ask for your password to reset? You don't need to do anything, your account is safe.\nPPS: You can't reply to this mail; your reply will get lost in the great empty void of bits and data on the internet...`,
-						html: `<p>Dear Roylen-user,</p><p>Somebody, maybe you, has requested a new password to access the Roylen app. Please open the app, click the 'reset password' button on the login-page, and use the key provided here to reset your password.</p><p><hr /><p>Key:<br />${secretKey}</p><hr /><p>With kind regards,</p><p>The Roylen Team</p><p>PS: you didn't ask for your password to reset? You don't need to do anything, your account is safe.</p><p>PPS: You can't reply to this mail; your reply will get lost in the great empty void of bits and data on the internet...</p>`
+						text: `Dear Roylen-user,\n\nsomebody, maybe you, has requested a new password to access the Roylen app. Please open the app, click the 'reset password' button on the login-page, and use the key provided here to reset your password.\n\n__________________________\n\nKey:${secretKey}\n\n__________________________\n\nTake care, you can only use this key once! \n\nWith kind regards,\nThe Roylen Team\n\nPS: you didn't ask for your password to reset? You don't need to do anything, your account is safe.\nPPS: You can't reply to this mail; your reply will get lost in the great empty void of bits and data on the internet...`,
+						html: `<p>Dear Roylen-user,</p><p>Somebody, maybe you, has requested a new password to access the Roylen app. Please open the app, click the 'reset password' button on the login-page, and use the key provided here to reset your password.</p><p><hr /><p>Key:<br />${secretKey}</p><hr /><p>Take care, you can only use this key once!</p><p>With kind regards,</p><p>The Roylen Team</p><p>PS: you didn't ask for your password to reset? You don't need to do anything, your account is safe.</p><p>PPS: You can't reply to this mail; your reply will get lost in the great empty void of bits and data on the internet...</p>`
 					};
-					sgMail.send(msg);
-					return res
-						.status(200)
-						.send({
-							succes: 1,
-							msg: 'We have sent you a secret key to reset your password. '
+					sgMail.send(msg, false, (err, result) => {
+						if (err) return res.status(422).send({ error: err });
+						return res.status(200).send({
+							result,
+							success: 1,
+							msg:
+								"We have sent you a secret key to reset your password. If you don't see it, please check your spambox."
 						});
+					});
 				} else {
-					return res
-						.status(200)
-						.send(
+					return res.status(200).send({
+						error:
 							"Sorry, we're unable to provide you with a password reset key. Please check the spelling of your email address."
-						);
+					});
 				}
 			}
 		);
