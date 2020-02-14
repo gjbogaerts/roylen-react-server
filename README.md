@@ -7,5 +7,6 @@ App for the exchange of children's toys and clothings. Made with love for the pl
 - create an uploads/pics folder in src, make it writeable
 - create an env/keys.js file in src, with your auth keys etc.
 - create an env/sendgrid.js file in the same location.
+- create an env/admin.js file in the same location.
 - do npm install in server folder
 - do pm2 restart api
