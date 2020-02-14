@@ -37,6 +37,10 @@ const AdSchema = new mongoose.Schema({
 		type: Boolean,
 		default: true
 	},
+	isForbidden: {
+		type: Boolean,
+		default: false
+	},
 	pics: {
 		type: [String]
 	},
