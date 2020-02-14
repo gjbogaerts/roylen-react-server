@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const JWTKey = require('../env/keys');
+const ADMIN = require('../env/admin');
 const gatekeeper = require('../middlewares/gatekeeper');
 const User = mongoose.model('User');
 const SendGridKey = require('../env/sendgrid');
@@ -105,6 +106,16 @@ router.post('/api/signin', async (req, res) => {
 		res.send({ ...user.toJSON(), token });
 	} catch (err) {
 		return send422(res);
+	}
+});
+
+router.post('/api/admin', (req, res) => {
+	const adminString = JSON.stringify(ADMIN);
+	const reqString = JSON.stringify(req.body);
+	if (adminString === reqString) {
+		res.status(200).send({ result: 1 });
+	} else {
+		res.status(422).send({ result: 0 });
 	}
 });
 
