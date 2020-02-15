@@ -11,8 +11,9 @@ const authRoutes = require('./routes/AuthRoute');
 const adRoutes = require('./routes/AdRoute');
 const msgRoutes = require('./routes/MessageRoute');
 const adminRoutes = require('./routes/AdminRoute');
+const DBPASS = require('./env/db');
 
-const mongoUri = 'mongodb://localhost/roylen';
+const mongoUri = `mongodb://roylen:${DBPASS}@localhost/roylen`;
 mongoose.connect(mongoUri, {
 	useUnifiedTopology: true,
 	useCreateIndex: true,

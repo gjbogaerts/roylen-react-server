@@ -10,6 +10,7 @@ App for the exchange of children's toys and clothings. Made with love for the pl
 - create an env/admin.js file in the same location.
 - do npm install in server folder
 - do pm2 restart api
+- set up mongodb server authentication: https://docs.mongodb.com/manual/administration/security-checklist/ and https://docs.mongodb.com/manual/tutorial/enable-authentication/
 
 ### moved
 
