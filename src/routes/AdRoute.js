@@ -9,40 +9,6 @@ const router = express.Router();
 const uploadURI = '/uploads/pics';
 const upload = require('../utils/uploads');
 
-router.post('/api/ads/forbid', async (req, res) => {
-	const { id } = req.body;
-	try {
-		Ad.updateOne({ _id: id }, { isForbidden: true }, (err, doc) => {
-			if (err) {
-				return res.status(422).send(err);
-			}
-			return res.status(200).send(doc);
-		});
-	} catch (err) {
-		res
-			.status(422)
-			.send(
-				'Error trying to update the ad. Please use the command line directly or try later.'
-			);
-	}
-});
-
-router.post('/api/ads/unforbid', async (req, res) => {
-	const { id } = req.body;
-	try {
-		Ad.updateOne({ _id: id }, { isForbidden: false }, (err, doc) => {
-			if (err) return res.status(422).send(err);
-			return res.status(200).send(doc);
-		});
-	} catch (err) {
-		res
-			.status(422)
-			.send(
-				'Error torying to update the ad. Please use the command line directly or try later.'
-			);
-	}
-});
-
 router.post('/api/adCreate', upload.any(), gatekeeper, async (req, res) => {
 	// console.log(req.files);
 	// console.log(JSON.parse(JSON.stringify(req.body)));
