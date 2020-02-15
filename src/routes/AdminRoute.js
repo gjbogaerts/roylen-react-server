@@ -13,12 +13,52 @@ const sendErr = (res, err) => {
 	return res.status(422).send({ error: 1, message: err });
 };
 
+router.get('/api/admin/users', adminSecure, (req, res) => {
+	try {
+		User.find({}, '_id screenName', { limit: 50 }, (err, doc) => {
+			if (err) return sendErr(res, err);
+			res.send(doc);
+		});
+	} catch (err) {
+		return sendErr(res, err.message);
+	}
+});
+
+router.get('/api/admin/user/:id', adminSecure, (req, res) => {
+	try {
+		// console.log('hey: ', req.params.id);
+		User.findById(
+			req.params.id,
+			'_id screenName email nix avatar isBanned',
+			(err, doc) => {
+				if (err) return sendErr(res, err);
+				// console.log(doc);
+				res.send(doc);
+			}
+		);
+	} catch (err) {
+		return sendErr(res, err.message);
+	}
+});
+
+router.post('/api/admin/user/userByScreenName', adminSecure, (req, res) => {
+	const name = req.body.screenName;
+	try {
+		User.findOne({ screenName: name }, '_id', (err, doc) => {
+			if (err) return sendErr(res, err);
+			return res.send(doc);
+		});
+	} catch (err) {
+		return sendErr(res, err.message);
+	}
+});
+
 router.post('/api/admin/user/ban', adminSecure, (req, res) => {
 	const { id } = req.body;
 	try {
 		User.updateOne({ _id: id }, { isBanned: true }, (err, doc) => {
 			if (err) return sendErr(res, err);
-			return res.status(200).send({ error: 0, modified: doc.modified });
+			return res.status(200).send(doc);
 		});
 	} catch (err) {
 		return sendErr(res, err.message);
@@ -30,7 +70,7 @@ router.post('/api/admin/user/unban', adminSecure, (req, res) => {
 	try {
 		User.updateOne({ _id: id }, { isBanned: false }, (err, doc) => {
 			if (err) return sendErr(res, err);
-			return res.status(200).send({ error: 0, modified: doc.modified });
+			return res.status(200).send(doc);
 		});
 	} catch (err) {
 		return sendErr(res, err.message);
