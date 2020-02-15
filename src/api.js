@@ -9,7 +9,8 @@ const path = require('path');
 global.__baseDir = __dirname;
 const authRoutes = require('./routes/AuthRoute');
 const adRoutes = require('./routes/AdRoute');
-const msgRoutes = require('./routes/MessageRoute.js');
+const msgRoutes = require('./routes/MessageRoute');
+const adminRoutes = require('./routes/AdminRoute');
 
 const mongoUri = 'mongodb://localhost/roylen';
 mongoose.connect(mongoUri, {
@@ -46,6 +47,7 @@ app.use(function(req, res, next) {
 app.use(authRoutes);
 app.use(adRoutes);
 app.use(msgRoutes);
+app.use(adminRoutes);
 app.use(
 	'/uploads',
 	express.static(path.join(__dirname, 'uploads'), {

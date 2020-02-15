@@ -28,6 +28,10 @@ const UserSchema = new mongoose.Schema({
 	avatar: {
 		type: String
 	},
+	isBanned: {
+		type: Boolean,
+		default: false
+	},
 	ads: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Ad' }]
 });
 
