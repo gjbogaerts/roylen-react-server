@@ -5,9 +5,7 @@ App for the exchange of children's toys and clothings. Made with love for the pl
 ## deployment
 
 - create an uploads/pics folder in src, make it writeable
-- create an env/keys.js file in src, with your auth keys etc.
-- create an env/sendgrid.js file in the same location.
-- create an env/admin.js file in the same location.
+- create an env folder, with files admin.js, db.js, keys.js and sendgrid.js. They contain secret info...
 - do npm install in server folder
 - do pm2 restart api
 - set up mongodb server authentication: https://docs.mongodb.com/manual/administration/security-checklist/ and https://docs.mongodb.com/manual/tutorial/enable-authentication/

@@ -3,6 +3,7 @@ keys.js
 sendgrid.js
 sendgrid.env
 admin.js
+db.js
 .DS_Store
 # user generated
 uploads
