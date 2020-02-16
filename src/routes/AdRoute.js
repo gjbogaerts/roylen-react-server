@@ -74,9 +74,6 @@ router.get('/api/ads/:adId', async (req, res) => {
 	}
 });
 
-/**
- * TODO: work on these routes
- */
 //category
 router.get('/api/ads/c/:category', async (req, res) => {
 	try {
@@ -104,6 +101,35 @@ router.get('/api/ads/q/:q', async (req, res) => {
 			});
 	} catch (err) {
 		res.status(422).send(err, 'Could not fetch the ads');
+	}
+});
+
+//for user
+router.get('/api/ads/fromUser/:userId', async (req, res) => {
+	try {
+		Ad.find({ creator: req.params.userId })
+			.sort('-dateAdded')
+			.exec((err, doc) => {
+				if (err) return res.status(422).send(err, 'Could not fetch the ads');
+				res.send(doc);
+			});
+	} catch (err) {
+		res.status(422).send(err, 'Could not fetch the ads');
+	}
+});
+
+router.delete('/api/ads', gatekeeper, async (req, res) => {
+	const { id, creator } = req.body;
+	if (creator != req.user._id) {
+		//We can't use identity operator !==, creator is string, req.user._id is an object
+		return res.status(422).send('Not authorized to perform this action.');
+	}
+	try {
+		const result = await Ad.deleteOne({ _id: id });
+		return res.status(200).json(result.deletedCount);
+		// console.log(result.deletedCount);
+	} catch (err) {
+		res.status(422).send(err);
 	}
 });
 
