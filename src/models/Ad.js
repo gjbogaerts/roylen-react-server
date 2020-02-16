@@ -50,6 +50,6 @@ const AdSchema = new mongoose.Schema({
 	}
 });
 
-AdSchema.index({ title: 10, description: 3 });
+AdSchema.index({ title: 'text', description: 'text' });
 
 mongoose.model('Ad', AdSchema);
