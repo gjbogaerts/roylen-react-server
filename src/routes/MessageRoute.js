@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const gatekeeper = require('../middlewares/gatekeeper');
 const router = express.Router();
 const Message = mongoose.model('Message');
+const SendGridKey = require('../env/sendgrid');
+const sgMail = require('@sendgrid/mail');
 
 router.get('/api/message/:userId', gatekeeper, async (req, res) => {
 	if (req.user._id != req.params.userId) {
@@ -77,6 +79,24 @@ router.post('/api/message', gatekeeper, async (req, res) => {
 		}
 	});
 	// console.log(msg);
+});
+
+// stub
+router.post('/api/message/contact', async (req, res) => {
+	const { msg, email } = req.body;
+	if (!email) email = 'no-reply@roylen.ga';
+	const contact = {
+		to: 'roylen@raker.nl',
+		from: email,
+		subject: 'Message from contact form Roylen',
+		text: msg,
+		html: msg
+	};
+
+	sgMail.send(contact, false, (err, result) => {
+		if (err) return res.status(422).send({ error: err });
+		return res.status(200).send('status is sufficient');
+	});
 });
 
 module.exports = router;
