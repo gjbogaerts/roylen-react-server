@@ -18,8 +18,9 @@ router.post('/api/adCreate', upload.any(), gatekeeper, async (req, res) => {
 		description,
 		virtualPrice,
 		category,
-		creator,
-		adNature
+		adNature,
+		longitude,
+		latitude
 	} = req.body;
 	// console.log(req.user._id);
 	// console.log(creator);
@@ -37,13 +38,22 @@ router.post('/api/adCreate', upload.any(), gatekeeper, async (req, res) => {
 		virtualPrice,
 		category,
 		pics,
-		adNature
+		adNature,
+		location: {
+			type: 'Point',
+			coordinates: [longitude, latitude]
+		}
 	});
 	// console.log(ad);
-	await ad.save({}, (err, doc) => {
-		if (err) res.status(422).send(`Unable to create ad: ${err}`);
-		res.send({ msg: 'Success, ad created', doc });
-	});
+	try {
+		await ad.save({}, (err, doc) => {
+			if (err) res.status(422).send(`Unable to create ad: ${err}`);
+			res.send({ msg: 'Success, ad created', doc });
+		});
+	} catch (err) {
+		console.log(err);
+		res.status(422).send(`Unable to create ad: ${err}`);
+	}
 });
 
 router.get('/api/ads/', async (req, res) => {

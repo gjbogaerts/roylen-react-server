@@ -1,5 +1,17 @@
 const mongoose = require('mongoose');
 
+const pointSchema = new mongoose.Schema({
+	type: {
+		type: String,
+		enum: ['Point'],
+		required: true
+	},
+	coordinates: {
+		type: [Number],
+		required: true
+	}
+});
+
 const AdSchema = new mongoose.Schema({
 	creator: {
 		type: mongoose.Schema.Types.ObjectId,
@@ -47,6 +59,9 @@ const AdSchema = new mongoose.Schema({
 	category: {
 		type: String,
 		required: true
+	},
+	location: {
+		type: pointSchema
 	}
 });
 
