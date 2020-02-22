@@ -84,6 +84,29 @@ router.get('/api/ads/:adId', async (req, res) => {
 	}
 });
 
+//distance
+router.post('/api/ads/withDistance', async (req, res) => {
+	const { dist, longitude, latitude } = req.body;
+	// console.log(dist, longitude, latitude);
+	try {
+		await Ad.find()
+			.where('location')
+			.within({
+				center: [longitude, latitude],
+				radius: dist,
+				spherical: true,
+				unique: false
+			})
+			.populate('creator')
+			.exec((err, doc) => {
+				if (err) return res.status(422).send(err, 'Could not fetch the ads');
+				res.send(doc);
+			});
+	} catch (error) {
+		res.status(422).send(err, 'Could not fetch the ads');
+	}
+});
+
 //category
 router.get('/api/ads/c/:category', async (req, res) => {
 	try {
