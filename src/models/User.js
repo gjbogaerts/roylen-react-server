@@ -32,7 +32,8 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  ads: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Ad' }]
+  ads: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Ad' }],
+  favoriteAds: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Ad' }]
 });
 
 UserSchema.pre('save', function(next) {

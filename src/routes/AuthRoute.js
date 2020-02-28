@@ -108,6 +108,23 @@ router.post('/api/resetPassword', async (req, res) => {
   }
 });
 
+router.post('/api/favorite', async (req, res) => {
+  const { userId, adId } = req.body;
+  try {
+    User.findByIdAndUpdate(
+      userId,
+      { $push: { favoriteAds: adId } },
+      (err, doc) => {
+        console.log(err, doc);
+        if (err) return send422(res);
+        return res.status(200).send({ user: doc });
+      }
+    );
+  } catch (err) {
+    return send422(res);
+  }
+});
+
 router.post('/api/signin', async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
