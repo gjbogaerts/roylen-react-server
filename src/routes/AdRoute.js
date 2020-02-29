@@ -2,10 +2,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 const gatekeeper = require('../middlewares/gatekeeper');
 const Ad = mongoose.model('Ad');
+const User = mongoose.model('User');
 const router = express.Router();
 const sgMail = require('@sendgrid/mail');
 const uploadURI = '/uploads/pics';
 const upload = require('../utils/uploads');
+const _ = require('lodash');
 
 router.post('/api/adCreate', upload.any(), gatekeeper, async (req, res) => {
   // console.log(req.files);
@@ -105,6 +107,30 @@ router.get('/api/ads/:adId', async (req, res) => {
       });
   } catch (err) {
     res.status(422).send(err, 'Could not fetch the ad');
+  }
+});
+
+//favorites
+router.get('/api/ads/saved/:userId', gatekeeper, async (req, res) => {
+  const userId = req.params.userId;
+  if (req.user._id == userId) {
+    const favAds = req.user.favoriteAds;
+    if (!favAds || favAds.length === 0) {
+      res.status(200).send([]);
+    } else {
+      try {
+        User.findById(userId, 'favoriteAds')
+          .populate('favoriteAds')
+          .exec((err, doc) => {
+            if (err)
+              res.status(422).send('Could not fetch the ads from the database');
+            let result = _.uniqBy(doc.favoriteAds, '_id');
+            res.status(200).send(result);
+          });
+      } catch (err) {
+        res.status(422).send('Error connecting to the database');
+      }
+    }
   }
 });
 
