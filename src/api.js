@@ -14,7 +14,7 @@ const adminRoutes = require('./routes/AdminRoute');
 const DBPASS = require('./env/db');
 
 // const mongoUri = `mongodb://roylen:${DBPASS}@localhost/roylen`;
-const mongoUri = `mongodb+srv://roylen:${DBPASS}@roylen-cluster-x1bzx.azure.mongodb.net/test?retryWrites=true&w=majority`;
+const mongoUri = `mongodb+srv://roylen:${DBPASS}@roylen-cluster-x1bzx.azure.mongodb.net/roylen?retryWrites=true&w=majority`;
 mongoose.connect(mongoUri, {
   useUnifiedTopology: true,
   useCreateIndex: true,
