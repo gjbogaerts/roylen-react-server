@@ -8,10 +8,21 @@ const User = mongoose.model('User');
 const SendGridKey = require('../env/sendgrid');
 const crypto = require('crypto');
 const sgMail = require('@sendgrid/mail');
-
 sgMail.setApiKey(SendGridKey);
-const uploadURI = '/uploads/pics';
+
+//checking file path
+const fs = require('fs');
 const upload = require('../utils/uploads');
+const uploadURI = '/uploads/pics';
+const baseDir = `${__baseDir}${uploadURI}`;
+const d = new Date();
+const uploadDir = baseDir + '/' + d.getFullYear() + '/' + d.getMonth();
+fs.mkdir(uploadDir, { recursive: true }, (err) => {
+  if (err) {
+    throw err;
+  }
+  console.log(uploadDir + ' created');
+});
 
 router.get('/api/checkEmail/:email', async (req, res) => {
   try {
@@ -64,7 +75,7 @@ router.post('/api/conformResetPassword', async (req, res) => {
         success: 1,
         msg:
           'Your password has been reset. You can now login with your new password',
-        doc
+        doc,
       });
     });
   } catch (err) {
@@ -85,7 +96,7 @@ router.post('/api/resetPassword', async (req, res) => {
           from: 'do-not-reply@roylen.ga',
           subject: 'Reset your password',
           text: `Dear Roylen-user,\n\nsomebody, maybe you, has requested a new password to access the Roylen app. Please open the app, click the 'reset password' button on the login-page, and use the key provided here to reset your password.\n\n__________________________\n\nKey:${secretKey}\n\n__________________________\n\nTake care, you can only use this key once! \n\nWith kind regards,\nThe Roylen Team\n\nPS: you didn't ask for your password to reset? You don't need to do anything, your account is safe.\nPPS: You can't reply to this mail; your reply will get lost in the great empty void of bits and data on the internet...`,
-          html: `<p>Dear Roylen-user,</p><p>Somebody, maybe you, has requested a new password to access the Roylen app. Please open the app, click the 'reset password' button on the login-page, and use the key provided here to reset your password.</p><p><hr /><p>Key:<br />${secretKey}</p><hr /><p>Take care, you can only use this key once!</p><p>With kind regards,</p><p>The Roylen Team</p><p>PS: you didn't ask for your password to reset? You don't need to do anything, your account is safe.</p><p>PPS: You can't reply to this mail; your reply will get lost in the great empty void of bits and data on the internet...</p>`
+          html: `<p>Dear Roylen-user,</p><p>Somebody, maybe you, has requested a new password to access the Roylen app. Please open the app, click the 'reset password' button on the login-page, and use the key provided here to reset your password.</p><p><hr /><p>Key:<br />${secretKey}</p><hr /><p>Take care, you can only use this key once!</p><p>With kind regards,</p><p>The Roylen Team</p><p>PS: you didn't ask for your password to reset? You don't need to do anything, your account is safe.</p><p>PPS: You can't reply to this mail; your reply will get lost in the great empty void of bits and data on the internet...</p>`,
         };
         sgMail.send(msg, false, (err, result) => {
           if (err) return res.status(422).send({ error: err });
@@ -93,13 +104,13 @@ router.post('/api/resetPassword', async (req, res) => {
             result,
             success: 1,
             msg:
-              "We have sent you a secret key to reset your password. If you don't see it, please check your spambox."
+              "We have sent you a secret key to reset your password. If you don't see it, please check your spambox.",
           });
         });
       } else {
         return res.status(200).send({
           error:
-            "Sorry, we're unable to provide you with a password reset key. Please check the spelling of your email address."
+            "Sorry, we're unable to provide you with a password reset key. Please check the spelling of your email address.",
         });
       }
     });
@@ -147,8 +158,11 @@ router.post('/api/profile', upload.any(), gatekeeper, async (req, res) => {
   try {
     let imagePath = null;
     if (req.files && req.files.length > 0) {
-      imagePath = uploadURI + '/' + req.files[0]['filename'];
+      // imagePath = upload.storage;
+      imagePath = uploadDir + '/' + req.files[0]['filename'];
     }
+    console.log(req.files);
+    console.log(imagePath);
     let email = req.user.email;
     if (req.body['email'] != '') {
       email = req.body['email'];
@@ -160,16 +174,18 @@ router.post('/api/profile', upload.any(), gatekeeper, async (req, res) => {
       newData,
       { useFindAndModify: false },
       (err, doc) => {
+        // console.log('database', err);
         if (err) return send422(res);
         return res.send({ success: 1, avatar: doc.avatar });
       }
     );
   } catch (err) {
+    // console.log('upload', err);
     return send422(res);
   }
 });
 
-const send422 = res => {
+const send422 = (res) => {
   res.status(422).send({ error: 'Must provide valid email and password' });
 };
 
