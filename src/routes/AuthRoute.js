@@ -16,7 +16,10 @@ const upload = require('../utils/uploads');
 const uploadURI = '/uploads/pics';
 const baseDir = `${__baseDir}${uploadURI}`;
 const d = new Date();
-const uploadDir = baseDir + '/' + d.getFullYear() + '/' + d.getMonth();
+const dirExtension = '/' + d.getFullYear() + '/' + d.getMonth() + '/';
+const uploadDir = baseDir + dirExtension;
+const dbAvatarUri = uploadURI + dirExtension;
+
 fs.mkdir(uploadDir, { recursive: true }, (err) => {
   if (err) {
     throw err;
@@ -139,15 +142,19 @@ router.post('/api/favorite', async (req, res) => {
 router.post('/api/signin', async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
+    console.log('no email, passwor');
     return send422(res);
   }
   const user = await User.findOne({ email });
   if (!user) {
+    console.log('no users');
     return send422(res);
   }
   try {
     await user.comparePassword(password);
     const token = jwt.sign({ userId: user._id }, JWTKey);
+    console.log(user.toJSON());
+    console.log(token);
     res.send({ ...user.toJSON(), token });
   } catch (err) {
     return send422(res);
@@ -159,10 +166,8 @@ router.post('/api/profile', upload.any(), gatekeeper, async (req, res) => {
     let imagePath = null;
     if (req.files && req.files.length > 0) {
       // imagePath = upload.storage;
-      imagePath = uploadDir + '/' + req.files[0]['filename'];
+      imagePath = dbAvatarUri + req.files[0]['filename'];
     }
-    console.log(req.files);
-    console.log(imagePath);
     let email = req.user.email;
     if (req.body['email'] != '') {
       email = req.body['email'];
