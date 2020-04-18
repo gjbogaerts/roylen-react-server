@@ -24,7 +24,7 @@ fs.mkdir(uploadDir, { recursive: true }, (err) => {
   if (err) {
     throw err;
   }
-  console.log(uploadDir + ' created');
+  // console.log(uploadDir + ' created');
 });
 
 router.get('/api/checkEmail/:email', async (req, res) => {

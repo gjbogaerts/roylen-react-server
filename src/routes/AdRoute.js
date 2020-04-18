@@ -5,9 +5,24 @@ const Ad = mongoose.model('Ad');
 const User = mongoose.model('User');
 const router = express.Router();
 const sgMail = require('@sendgrid/mail');
+const _ = require('lodash');
+
+//checking file path
+const fs = require('fs');
 const uploadURI = '/uploads/pics';
 const upload = require('../utils/uploads');
-const _ = require('lodash');
+const baseDir = `${__baseDir}${uploadURI}`;
+const d = new Date();
+const dirExtension = '/' + d.getFullYear() + '/' + d.getMonth() + '/';
+const uploadDir = baseDir + dirExtension;
+const dbPicUri = uploadURI + dirExtension;
+
+fs.mkdir(uploadDir, { recursive: true }, (err) => {
+  if (err) {
+    throw err;
+  }
+  // console.log(uploadDir + ' created');
+});
 
 router.post('/api/adCreate', upload.any(), gatekeeper, async (req, res) => {
   // console.log(req.files);
@@ -20,11 +35,11 @@ router.post('/api/adCreate', upload.any(), gatekeeper, async (req, res) => {
     category,
     adNature,
     longitude,
-    latitude
+    latitude,
   } = req.body;
   const pics = [];
-  req.files.map(file => {
-    return pics.push(uploadURI + '/' + file.filename);
+  req.files.map((file) => {
+    return pics.push(dbPicUri + file.filename);
   });
 
   const { _id } = req.user;
@@ -39,8 +54,8 @@ router.post('/api/adCreate', upload.any(), gatekeeper, async (req, res) => {
     adNature,
     location: {
       type: 'Point',
-      coordinates: [longitude, latitude]
-    }
+      coordinates: [longitude, latitude],
+    },
   });
   try {
     await ad.save({}, (err, doc) => {
@@ -73,7 +88,7 @@ router.post('/api/ads/warning', async (req, res) => {
     from: 'no-reply@roylen.ga',
     subject: 'Message from contact form Roylen',
     text: `Hey admin,\n\nThere was a warning regarding ad with id: ${adId}.\n\n${dbMessage}`,
-    html: `<p>Hey admin,</p><p>There was a warning regarding ad with id: ${adId}</p><p>${dbMessage}</p>`
+    html: `<p>Hey admin,</p><p>There was a warning regarding ad with id: ${adId}</p><p>${dbMessage}</p>`,
   };
 
   sgMail.send(contact, false, (err, result) => {
@@ -145,7 +160,7 @@ router.post('/api/ads/withDistance', async (req, res) => {
         center: [longitude, latitude],
         radius: dist,
         spherical: true,
-        unique: false
+        unique: false,
       })
       .populate('creator')
       .exec((err, doc) => {
