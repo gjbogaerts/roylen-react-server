@@ -206,6 +206,7 @@ router.get('/api/ads/q/:q', async (req, res) => {
 router.get('/api/ads/fromUser/:userId', async (req, res) => {
   try {
     Ad.find({ creator: req.params.userId })
+      .populate('creator')
       .sort('-dateAdded')
       .exec((err, doc) => {
         if (err) return res.status(422).send(err, 'Could not fetch the ads');
