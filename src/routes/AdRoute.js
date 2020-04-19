@@ -136,6 +136,7 @@ router.get('/api/ads/saved/:userId', gatekeeper, async (req, res) => {
       try {
         User.findById(userId, 'favoriteAds')
           .populate('favoriteAds')
+          .populate('creator')
           .exec((err, doc) => {
             if (err)
               res.status(422).send('Could not fetch the ads from the database');
