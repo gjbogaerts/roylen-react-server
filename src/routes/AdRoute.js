@@ -217,8 +217,9 @@ router.get('/api/ads/fromUser/:userId', async (req, res) => {
   }
 });
 
-router.delete('/api/ads', gatekeeper, async (req, res) => {
-  const { id, creator } = req.body;
+router.delete('/api/ads/:adId/:userId', gatekeeper, async (req, res) => {
+  const id = req.params.adId;
+  const creator = req.params.userId;
   if (creator != req.user._id) {
     //We can't use identity operator !==, creator is string, req.user._id is an object
     return res.status(422).send('Not authorized to perform this action.');
@@ -227,6 +228,7 @@ router.delete('/api/ads', gatekeeper, async (req, res) => {
     const result = await Ad.deleteOne({ _id: id });
     return res.status(200).json(result.deletedCount);
     // console.log(result.deletedCount);
+    // return res.status(200).send({ Result: 'OK' });
   } catch (err) {
     res.status(422).send(err);
   }
