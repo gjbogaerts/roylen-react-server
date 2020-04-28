@@ -62,7 +62,7 @@ router.post('/api/signup', async (req, res) => {
   }
 });
 
-router.post('/api/conformResetPassword', async (req, res) => {
+router.post('/api/confirmResetPassword', async (req, res) => {
   const pwResetKey = req.body.key;
   const password = req.body.pw;
   try {
