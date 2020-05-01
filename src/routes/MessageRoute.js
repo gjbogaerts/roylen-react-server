@@ -57,6 +57,30 @@ router.post('/api/message/markRead/', gatekeeper, async (req, res) => {
   }
 });
 
+router.post('/api/message/markUnread/', gatekeeper, async (req, res) => {
+  try {
+    Message.updateOne(
+      { _id: req.body.messageId },
+      { isRead: false },
+      (err, doc) => {
+        if (err) {
+          return res
+            .status(422)
+            .send(
+              `Unable to process your request. Please try again later: ${err}`
+            );
+        } else {
+          return res.status(200).send('Request executed');
+        }
+      }
+    );
+  } catch (err) {
+    return res
+      .status(422)
+      .send(`Unable to process your request. Please try again later: ${err}`);
+  }
+});
+
 router.post('/api/message', gatekeeper, async (req, res) => {
   const { senderName, message, fromId, toId, adId, adTitle } = req.body;
 
