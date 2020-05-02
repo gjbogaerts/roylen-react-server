@@ -32,7 +32,9 @@ mongoose.connection.on('error', (err) => {
 //starting app, routes and middleware
 const app = express();
 app.get('/', (req, res) => {
-  res.send('Hi there from the api!!');
+  res.send(
+    'Hi there from the api. You need an API key to access this service. If you think you need one, contact Roylen through the Roylen app.'
+  );
 });
 
 app.use(bodyParser.json({ limit: '50mb', extended: true }));
