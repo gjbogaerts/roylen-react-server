@@ -107,14 +107,14 @@ router.post('/api/message', gatekeeper, async (req, res) => {
 
 // stub
 router.post('/api/message/contact', async (req, res) => {
-  const { msg, email } = req.body;
-  if (!email) email = 'no-reply@roylen.ga';
+  const { msg, email, name } = req.body;
+  if (!email) email = 'no-reply@roylen.net';
   const contact = {
     to: 'roylen@raker.nl',
     from: email,
     subject: 'Message from contact form Roylen',
-    text: msg,
-    html: msg,
+    text: 'Van ' + name + 'komt de boodschap: ' + msg,
+    html: 'Van ' + name + 'komt de boodschap: ' + msg,
   };
 
   sgMail.send(contact, false, (err, result) => {
