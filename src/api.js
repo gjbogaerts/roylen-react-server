@@ -38,6 +38,12 @@ app.get('/', (req, res) => {
 });
 
 app.use(bodyParser.json({ limit: '50mb', extended: true }));
+app.use(
+  '/uploads',
+  express.static(path.join(__dirname, 'uploads'), {
+    extensions: ['jpg', 'jpeg', 'png'],
+  })
+);
 app.use(function (req, res, next) {
   const reqKey = req.headers['x-api-key'];
   if (!reqKey || reqKey != apiKey) {
@@ -63,12 +69,7 @@ app.use(authRoutes);
 app.use(adRoutes);
 app.use(msgRoutes);
 app.use(adminRoutes);
-app.use(
-  '/uploads',
-  express.static(path.join(__dirname, 'uploads'), {
-    extensions: ['jpg', 'jpeg', 'png'],
-  })
-);
+
 app.listen(3000, hostname, () => {
   console.log('listening on port 3000');
 });
