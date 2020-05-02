@@ -12,6 +12,7 @@ const adRoutes = require('./routes/AdRoute');
 const msgRoutes = require('./routes/MessageRoute');
 const adminRoutes = require('./routes/AdminRoute');
 const DBPASS = require('./env/db');
+const apiKey = require('./env/apikey');
 
 // const mongoUri = `mongodb://roylen:${DBPASS}@localhost/roylen`;
 const mongoUri = `mongodb+srv://roylen:${DBPASS}@roylen-cluster-x1bzx.azure.mongodb.net/roylen?retryWrites=true&w=majority`;
@@ -36,6 +37,15 @@ app.get('/', (req, res) => {
 
 app.use(bodyParser.json({ limit: '50mb', extended: true }));
 app.use(function (req, res, next) {
+  const reqKey = req.headers['x-api-key'];
+  if (!reqKey || reqKey != apiKey) {
+    res
+      .status(422)
+      .send(
+        'You need an API key to access this service. If you think you need one, contact Roylen through the Roylen app.'
+      );
+    return;
+  }
   res.header('Access-Control-Allow-Origin', '*');
   res.header(
     'Access-Control-Allow-Methods',
