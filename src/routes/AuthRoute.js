@@ -173,7 +173,12 @@ router.post('/api/profile', upload.any(), gatekeeper, async (req, res) => {
       email = req.body['email'];
     }
     const q = { _id: req.user._id };
-    const newData = { email, avatar: imagePath };
+    let newData;
+    if (imagePath != null) {
+      newData = { email, avatar: imagePath };
+    } else {
+      newData = { email };
+    }
     User.findByIdAndUpdate(
       q,
       newData,
