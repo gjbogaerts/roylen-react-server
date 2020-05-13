@@ -185,13 +185,13 @@ router.post('/api/profile', upload.any(), gatekeeper, async (req, res) => {
       { useFindAndModify: false },
       (err, doc) => {
         // console.log('database', err);
-        if (err) return send422(res);
+        if (err) return send422(err);
         return res.send({ success: 1, avatar: doc.avatar });
       }
     );
   } catch (err) {
     // console.log('upload', err);
-    return send422(res);
+    return send422(err);
   }
 });
 
