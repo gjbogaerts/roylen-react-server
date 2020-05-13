@@ -167,6 +167,8 @@ router.post('/api/profile', upload.any(), gatekeeper, async (req, res) => {
     if (req.files && req.files.length > 0) {
       // imagePath = upload.storage;
       imagePath = dbAvatarUri + req.files[0]['filename'];
+    } else {
+      imagePath = '/uploads/pics/statics/image9.jpeg';
     }
     let email = req.user.email;
     if (req.body['email'] != '') {
