@@ -85,7 +85,7 @@ router.post('/api/ads/warning', async (req, res) => {
   );
   const contact = {
     to: 'roylen@raker.nl',
-    from: 'no-reply@roylen.ga',
+    from: 'no-reply@roylen.net',
     subject: 'Message from contact form Roylen',
     text: `Hey admin,\n\nThere was a warning regarding ad with id: ${adId}.\n\n${dbMessage}`,
     html: `<p>Hey admin,</p><p>There was a warning regarding ad with id: ${adId}</p><p>${dbMessage}</p>`,
