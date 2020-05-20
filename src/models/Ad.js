@@ -64,11 +64,12 @@ const AdSchema = new mongoose.Schema({
   pics: {
     type: [String],
   },
-  offers: {
-    type: [mongoose.SchemaTypes.ObjectId],
-    ref: 'Offer',
-    default: [],
-  },
+  offers: [
+    {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'Offer',
+    },
+  ],
   category: {
     type: String,
     required: true,
