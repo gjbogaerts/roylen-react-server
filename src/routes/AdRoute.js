@@ -102,6 +102,7 @@ router.get('/api/ads/', async (req, res) => {
     Ad.find({ isActive: true, isForbidden: false })
       .sort({ dateAdded: -1 })
       .populate('creator')
+      .populate({ path: 'offers', populate: { path: 'fromUser' } })
       .exec((err, docs) => {
         if (err) {
           return res.send('Error connecting to the database');
@@ -116,6 +117,7 @@ router.get('/api/ads/:adId', async (req, res) => {
   try {
     Ad.findById(req.params.adId)
       .populate('creator')
+      .populate({ path: 'offers', populate: { path: 'fromUser' } })
       .exec((err, doc) => {
         if (err) res.status(422).send(err, 'Could not fetch the ad');
         res.send(doc);
@@ -136,6 +138,7 @@ router.get('/api/ads/saved/:userId', gatekeeper, async (req, res) => {
       try {
         User.findById(userId, 'favoriteAds')
           .populate({ path: 'favoriteAds', populate: { path: 'creator' } })
+          .populate({ path: 'offers', populate: { path: 'fromUser' } })
           .exec((err, doc) => {
             if (err)
               res.status(422).send('Could not fetch the ads from the database');
@@ -163,6 +166,7 @@ router.post('/api/ads/withDistance', async (req, res) => {
         unique: false,
       })
       .populate('creator')
+      .populate({ path: 'offers', populate: { path: 'fromUser' } })
       .exec((err, doc) => {
         if (err) return res.status(422).send(err, 'Could not fetch the ads');
         res.send(doc);
@@ -177,6 +181,7 @@ router.get('/api/ads/c/:category', async (req, res) => {
   try {
     Ad.find({ category: req.params.category, isActive: true })
       .populate('creator')
+      .populate({ path: 'offers', populate: { path: 'fromUser' } })
       .sort('-dateAdded')
       .exec((err, doc) => {
         if (err) return res.status(422).send(err, 'Could not fetch the ads');
@@ -192,6 +197,7 @@ router.get('/api/ads/q/:q', async (req, res) => {
     Ad.find({ $text: { $search: req.params.q } })
       .where({ isActive: true })
       .populate('creator')
+      .populate({ path: 'offers', populate: { path: 'fromUser' } })
       .sort('-dateAdded')
       .exec((err, doc) => {
         if (err) return res.status(422).send(err, 'Could not fetch the ads');
@@ -207,6 +213,7 @@ router.get('/api/ads/fromUser/:userId', async (req, res) => {
   try {
     Ad.find({ creator: req.params.userId })
       .populate('creator')
+      .populate({ path: 'offers', populate: { path: 'fromUser' } })
       .sort('-dateAdded')
       .exec((err, doc) => {
         if (err) return res.status(422).send(err, 'Could not fetch the ads');

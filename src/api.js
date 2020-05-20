@@ -1,6 +1,7 @@
 require('./models/User');
 require('./models/Ad');
 require('./models/Message');
+require('./models/Offer');
 const hostname = 'localhost';
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -11,6 +12,7 @@ const authRoutes = require('./routes/AuthRoute');
 const adRoutes = require('./routes/AdRoute');
 const msgRoutes = require('./routes/MessageRoute');
 const adminRoutes = require('./routes/AdminRoute');
+const offerRoutes = require('./routes/OfferRoute');
 const DBPASS = require('./env/db');
 const apiKey = require('./env/apikey');
 
@@ -68,6 +70,7 @@ app.use(function (req, res, next) {
 app.use(authRoutes);
 app.use(adRoutes);
 app.use(msgRoutes);
+app.use(offerRoutes);
 app.use(adminRoutes);
 
 app.listen(3000, hostname, () => {

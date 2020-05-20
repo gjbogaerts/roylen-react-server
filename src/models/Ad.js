@@ -4,73 +4,78 @@ const pointSchema = new mongoose.Schema({
   type: {
     type: String,
     enum: ['Point'],
-    required: true
+    required: true,
   },
   coordinates: {
     type: [Number],
-    required: true
-  }
+    required: true,
+  },
 });
 
 const AdSchema = new mongoose.Schema({
   creator: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
   },
   dateAdded: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
   expiryDate: {
     type: Date,
-    default: () => Date.now() + 31 * 24 * 3600 * 1000
+    default: () => Date.now() + 31 * 24 * 3600 * 1000,
   },
   title: {
     type: String,
     required: true,
     minlength: 5,
-    maxlength: 50
+    maxlength: 50,
   },
   adNature: {
     type: String,
     enum: ['wanted', 'offered'],
-    default: 'offered'
+    default: 'offered',
   },
   description: {
     type: String,
     required: true,
-    maxlength: 5200
+    maxlength: 5200,
   },
   virtualPrice: {
     type: Number,
-    min: 0
+    min: 0,
   },
   isActive: {
     type: Boolean,
-    default: true
+    default: true,
   },
   isForbidden: {
     type: Boolean,
-    default: false
+    default: false,
   },
   warnings: {
     type: Number,
-    default: 0
+    default: 0,
   },
   isValidated: {
     type: Boolean,
-    default: false
+    default: false,
   },
   pics: {
-    type: [String]
+    type: [String],
+  },
+  offers: {
+    type: [mongoose.SchemaTypes.ObjectId],
+    ref: 'Offer',
+    default: [],
   },
   category: {
     type: String,
-    required: true
+    required: true,
   },
   location: {
-    type: pointSchema
-  }
+    type: pointSchema,
+  },
 });
 
 AdSchema.index({ title: 'text', description: 'text' });
