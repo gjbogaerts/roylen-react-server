@@ -24,6 +24,21 @@ router.get('/api/offers', gatekeeper, async (req, res) => {
   }
 });
 
+router.post('/api/offers/accept', gatekeeper, async (req, res) => {
+  const { offerId } = req.body;
+  try {
+    Offer.update({ _id: offerId }, { accepted: true }, (err, doc) => {
+      if (err) {
+        console.log(err);
+        return res.status(422).send(err);
+      }
+      return res.status(200).send('OK');
+    });
+  } catch (err) {
+    return res.status(422).send(err);
+  }
+});
+
 router.post('/api/offers/new', gatekeeper, async (req, res) => {
   const { adId, userId, amount } = req.body;
   const offer = new Offer({

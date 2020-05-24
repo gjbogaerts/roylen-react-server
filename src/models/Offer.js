@@ -17,6 +17,10 @@ const OfferSchema = new mongoose.Schema({
     type: Number,
     min: 0,
   },
+  accepted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 mongoose.model('Offer', OfferSchema);
