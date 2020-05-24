@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 const gatekeeper = require('../middlewares/gatekeeper');
 const Ad = mongoose.model('Ad');
 const Offer = mongoose.model('Offer');
+const User = mongoose.model('User');
+const SendGridKey = require('../env/sendgrid');
+const sgMail = require('@sendgrid/mail');
 
 const router = express.Router();
 
@@ -25,14 +28,42 @@ router.get('/api/offers', gatekeeper, async (req, res) => {
 });
 
 router.post('/api/offers/accept', gatekeeper, async (req, res) => {
-  const { offerId } = req.body;
+  const { offerId, fromUserEmail, adTitle } = req.body;
   try {
-    Offer.update({ _id: offerId }, { accepted: true }, (err, doc) => {
+    Offer.findById(offerId, (err, doc) => {
       if (err) {
-        console.log(err);
         return res.status(422).send(err);
       }
-      return res.status(200).send('OK');
+      doc.accepted = true;
+      const amount = doc.amountOffered;
+      doc.save((err, result) => {
+        if (err) {
+          return res.status(422).send(err);
+        }
+
+        const acceptedEmail = {
+          to: fromUserEmail,
+          from: 'no-reply@roylen.net',
+          subject: 'Je bod is geaccepteerd',
+          text:
+            'Beste, \n\nJe bod op ' +
+            adTitle +
+            ' van ' +
+            amount +
+            ' nix is geaccepteerd. Je kunt nu naar de app gaan en een afspraak maken voor de overdracht.\n\nMet vriendelijke groet,\n\nHet Roylen-Team',
+          html:
+            '<p>Beste, <br><br>Je bod op ' +
+            adTitle +
+            ' van ' +
+            amount +
+            ' nix is geaccepteerd. Je kunt nu naar de app gaan en een afspraak maken voor de overdracht.</p><p>Met vriendelijke groet,</p><p>Het Roylen-Team</p>',
+        };
+
+        sgMail.send(acceptedEmail, false, (err, result) => {
+          if (err) return res.status(422).send({ error: err });
+          return res.status(200).send('OK');
+        });
+      });
     });
   } catch (err) {
     return res.status(422).send(err);
