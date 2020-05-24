@@ -27,6 +27,7 @@ router.get('/api/offers', gatekeeper, async (req, res) => {
 router.post('/api/offers/new', gatekeeper, async (req, res) => {
   const { adId, userId, amount } = req.body;
   const offer = new Offer({
+    ad: adId,
     fromUser: userId,
     amountOffered: amount,
   });

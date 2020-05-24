@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const OfferSchema = new mongoose.Schema({
+  ad: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Ad',
+  },
   fromUser: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
