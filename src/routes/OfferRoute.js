@@ -9,17 +9,19 @@ const sgMail = require('@sendgrid/mail');
 
 const router = express.Router();
 
-router.get('/api/offers', gatekeeper, async (req, res) => {
+router.get('/api/offers/fromUser', gatekeeper, async (req, res) => {
   const userId = req.user._id;
   try {
     const query = Offer.find();
-    query.where(ad.creator._id == userId);
+    query.where(fromUser == userId);
+    query.populate('ad');
+    query.sort('dateAdded');
     query.exec((err, doc) => {
       if (err) {
         console.log(err);
         return res.status(422).send(err);
       }
-      return res.status(200).send('success');
+      return res.status(200).send(doc);
     });
   } catch (err) {
     console.log(err);
