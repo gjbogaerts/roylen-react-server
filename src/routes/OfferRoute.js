@@ -13,7 +13,7 @@ router.get('/api/offers/fromUser', gatekeeper, async (req, res) => {
   const userId = req.user._id;
   try {
     const query = Offer.find();
-    query.where(fromUser == userId);
+    query.where('fromUser').equals(userId);
     query.populate('ad');
     query.sort('dateAdded');
     query.exec((err, doc) => {
