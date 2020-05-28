@@ -13,16 +13,19 @@ router.get('/api/offers/fromUser', gatekeeper, async (req, res) => {
   const userId = req.user._id;
   try {
     const query = Offer.find();
-    query.where('fromUser').equals(userId);
-    query.populate('ad');
-    query.sort('dateAdded');
-    query.exec((err, doc) => {
-      if (err) {
-        console.log(err);
-        return res.status(422).send(err);
-      }
-      return res.status(200).send(doc);
-    });
+    query
+      .where('fromUser')
+      .equals(userId)
+      .populate('ad')
+      .populate('fromUser')
+      .sort('dateAdded')
+      .exec((err, doc) => {
+        if (err) {
+          console.log(err);
+          return res.status(422).send(err);
+        }
+        return res.status(200).send(doc);
+      });
   } catch (err) {
     console.log(err);
     return res.status(422).send(err);
