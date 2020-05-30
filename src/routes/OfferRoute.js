@@ -4,7 +4,6 @@ const gatekeeper = require('../middlewares/gatekeeper');
 const Ad = mongoose.model('Ad');
 const Offer = mongoose.model('Offer');
 const User = mongoose.model('User');
-const SendGridKey = require('../env/sendgrid');
 const sgMail = require('@sendgrid/mail');
 
 const router = express.Router();
@@ -19,6 +18,9 @@ router.post('/api/offers/finalizetransaction', gatekeeper, async (req, res) => {
     Offer.updateOne({ _id: offerId }, { closed: true }, (err, doc) => {
       if (err) {
         return res.status(422).send(err);
+      }
+      if (doc.nModified == 0) {
+        return res.status(422).send('Dit aanbod is reeds betaald.');
       }
       User.updateOne({ _id: to }, { $inc: { nix: amount } }, (err, doc1) => {
         if (err) {
