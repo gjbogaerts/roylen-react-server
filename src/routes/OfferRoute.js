@@ -9,6 +9,38 @@ const sgMail = require('@sendgrid/mail');
 
 const router = express.Router();
 
+router.post('/api/offers/finalizetransaction', gatekeeper, async (req, res) => {
+  const userId = req.user._id;
+  const { offerId, from, to, amount } = req.body;
+  if (from != userId) {
+    return res.status(422).send('Not authorized');
+  }
+  try {
+    Offer.updateOne({ _id: offerId }, { closed: true }, (err, doc) => {
+      if (err) {
+        return res.status(422).send(err);
+      }
+      User.updateOne({ _id: to }, { $inc: { nix: amount } }, (err, doc1) => {
+        if (err) {
+          return res.status(422).send(err);
+        }
+        User.updateOne(
+          { _id: from },
+          { $inc: { nix: amount * -1 } },
+          (err, doc) => {
+            if (err) {
+              return res.status(422).send(err);
+            }
+            return res.status(200).send('OK');
+          }
+        );
+      });
+    });
+  } catch (err) {
+    return res.status(422).send(err);
+  }
+});
+
 router.get('/api/offers/fromUser', gatekeeper, async (req, res) => {
   const userId = req.user._id;
   try {
