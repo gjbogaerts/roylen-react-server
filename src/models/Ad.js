@@ -31,11 +31,6 @@ const AdSchema = new mongoose.Schema({
     minlength: 5,
     maxlength: 50,
   },
-  adNature: {
-    type: String,
-    enum: ['wanted', 'offered'],
-    default: 'offered',
-  },
   description: {
     type: String,
     required: true,
