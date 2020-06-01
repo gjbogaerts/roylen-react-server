@@ -70,9 +70,24 @@ const AdSchema = new mongoose.Schema({
       ref: 'Offer',
     },
   ],
-  category: {
+  mainCategory: {
     type: String,
-    required: true,
+  },
+  subCategory: {
+    type: String,
+  },
+  subSubCategory: {
+    type: String,
+  },
+  ageCategory: {
+    type: String,
+    enum: ['0-1', '2-4', '5-6', '7-10', '10-12', '12-16'],
+  },
+  city: {
+    type: String,
+  },
+  country: {
+    type: String,
   },
   location: {
     type: pointSchema,
