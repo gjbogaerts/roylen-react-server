@@ -212,6 +212,47 @@ router.get('/api/ads/q/:q', async (req, res) => {
   }
 });
 
+//from categories
+router.get(
+  '/api/ads/category/:categoryType/:categoryName',
+  async (req, res) => {
+    const _cType = req.params.categoryType;
+    let map = {};
+    const _cName = req.params.categoryName;
+    switch (_cType) {
+      case 'mainCategory':
+        map = { mainCategory: _cName };
+        break;
+      case 'subCategory':
+        map = { subCategory: _cName };
+        break;
+      case 'subSubCategory':
+        map = { subSubCategory: _cName };
+        break;
+      case 'ageCategory':
+        map = { ageCategory: _cName };
+        break;
+      default:
+        map = {};
+    }
+    try {
+      var q = Ad.find(map)
+        .where({ isActive: true })
+        .populate('creator')
+        .populate({ path: 'offers', populate: { path: 'fromUser' } })
+        .sort('-dateAdded');
+      // console.log(q.getQuery());
+      q.exec((err, doc) => {
+        if (err) return res.status(422).send(err);
+        res.status(200).send(doc);
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(422).send(err);
+    }
+  }
+);
+
 //for user
 router.get('/api/ads/fromUser/:userId', async (req, res) => {
   try {
