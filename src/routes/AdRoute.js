@@ -227,10 +227,10 @@ router.post('/api/ads/filter', async (req, res) => {
       q.where({ ageCategory: ageCategory });
     }
     if (Boolean(minPrice)) {
-      q.where({ minPrice: { $gt: minPrice } });
+      q.where({ virtualPrice: { $gt: minPrice } });
     }
     if (Boolean(maxPrice)) {
-      q.where({ maxPrice: { $lt: maxPrice } });
+      q.where({ virtualPrice: { $lt: maxPrice } });
     }
     if (Boolean(maxDistance) && Boolean(longitude) && Boolean(latitude)) {
       q.where('location').within({
