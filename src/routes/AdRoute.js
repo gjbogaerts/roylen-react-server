@@ -181,6 +181,9 @@ router.post('/api/ads/withDistance', async (req, res) => {
 });
 
 //category
+/**
+ * @deprecated
+ */
 router.get('/api/ads/c/:category', async (req, res) => {
   try {
     Ad.find({ category: req.params.category, isActive: true })
@@ -195,6 +198,64 @@ router.get('/api/ads/c/:category', async (req, res) => {
     res.status(422).send(err, 'Could not fetch the ads');
   }
 });
+
+router.post('/api/ads/filter', async (req, res) => {
+  // console.log(req.body);
+  const {
+    mainCategory,
+    subCategory,
+    subSubCategory,
+    ageCategory,
+    minPrice,
+    maxPrice,
+    maxDistance,
+    latitude,
+    longitude,
+  } = req.body;
+  try {
+    const q = Ad.find();
+    if (Boolean(subSubCategory)) {
+      q.where({ subSubCategory: subSubCategory });
+    }
+    if (Boolean(subCategory)) {
+      q.where({ subCategory: subCategory });
+    }
+    if (Boolean(mainCategory)) {
+      q.where({ mainCategory: mainCategory });
+    }
+    if (Boolean(ageCategory)) {
+      q.where({ ageCategory: ageCategory });
+    }
+    if (Boolean(minPrice)) {
+      q.where({ minPrice: { $gt: minPrice } });
+    }
+    if (Boolean(maxPrice)) {
+      q.where({ maxPrice: { $lt: maxPrice } });
+    }
+    if (Boolean(maxDistance) && Boolean(longitude) && Boolean(latitude)) {
+      q.where('location').within({
+        center: [longitude, latitude],
+        radius: maxDistance,
+        spherical: true,
+        unique: false,
+      });
+    }
+    q.populate('creator')
+      .populate({ path: 'offers', populate: { path: 'fromUser' } })
+      .sort('-dateAdded')
+      .exec((err, doc) => {
+        if (err) {
+          // console.log(err + 'bij query');
+          return res.status(422).send(err);
+        }
+        res.status(200).send(doc);
+      });
+  } catch (err) {
+    // console.log(err + 'bij try/catch');
+    return res.status(422).send(err);
+  }
+});
+
 //search
 router.get('/api/ads/q/:q', async (req, res) => {
   try {
