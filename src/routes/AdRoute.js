@@ -200,37 +200,39 @@ router.get('/api/ads/c/:category', async (req, res) => {
 });
 
 router.post('/api/ads/filter', async (req, res) => {
+  mongoose.set('debug', true);
   // console.log(req.body);
   const {
     mainCategory,
     subCategory,
     subSubCategory,
     ageCategory,
-    minPrice,
-    maxPrice,
+    priceMin,
+    priceMax,
     maxDistance,
     latitude,
     longitude,
   } = req.body;
+  console.log(req.body);
   try {
     const q = Ad.find();
     if (Boolean(subSubCategory)) {
-      q.where({ subSubCategory: subSubCategory });
+      q.where('subSubCategory', subSubCategory);
     }
     if (Boolean(subCategory)) {
-      q.where({ subCategory: subCategory });
+      q.where('subCategory', subCategory);
     }
     if (Boolean(mainCategory)) {
-      q.where({ mainCategory: mainCategory });
+      q.where('mainCategory', mainCategory);
     }
     if (Boolean(ageCategory)) {
-      q.where({ ageCategory: ageCategory });
+      q.where('ageCategory', ageCategory);
     }
-    if (Boolean(minPrice)) {
-      q.where({ virtualPrice: { $gt: minPrice } });
+    if (Boolean(priceMin)) {
+      q.where('virtualPrice').gte(priceMin);
     }
-    if (Boolean(maxPrice)) {
-      q.where({ virtualPrice: { $lt: maxPrice } });
+    if (Boolean(priceMax)) {
+      q.where('virtualPrice').lte(priceMax);
     }
     if (Boolean(maxDistance) && Boolean(longitude) && Boolean(latitude)) {
       q.where('location').within({
@@ -240,6 +242,7 @@ router.post('/api/ads/filter', async (req, res) => {
         unique: false,
       });
     }
+    // console.log(q.to);
     q.populate('creator')
       .populate({ path: 'offers', populate: { path: 'fromUser' } })
       .sort('-dateAdded')
@@ -254,6 +257,7 @@ router.post('/api/ads/filter', async (req, res) => {
     // console.log(err + 'bij try/catch');
     return res.status(422).send(err);
   }
+  mongoose.set('debug', false);
 });
 
 //search
