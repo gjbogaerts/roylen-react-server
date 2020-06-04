@@ -5,6 +5,7 @@ const router = express.Router();
 const Message = mongoose.model('Message');
 const SendGridKey = require('../env/sendgrid');
 const sgMail = require('@sendgrid/mail');
+const mails = require('../env/mail_list');
 
 router.get('/api/message/:userId', gatekeeper, async (req, res) => {
   if (req.user._id != req.params.userId) {
@@ -108,9 +109,9 @@ router.post('/api/message', gatekeeper, async (req, res) => {
 // stub
 router.post('/api/message/contact', async (req, res) => {
   const { msg, email, name } = req.body;
-  if (!email) email = 'no-reply@roylen.net';
+  if (!email) email = mails['no-reply'];
   const contact = {
-    to: 'roylen@raker.nl',
+    to: mails.contact,
     from: email,
     subject: 'Message from contact form Roylen',
     text: 'Van ' + name + 'komt de boodschap: ' + msg,

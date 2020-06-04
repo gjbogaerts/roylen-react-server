@@ -5,6 +5,7 @@ const Ad = mongoose.model('Ad');
 const User = mongoose.model('User');
 const router = express.Router();
 const sgMail = require('@sendgrid/mail');
+const mails = require('../env/mail_list');
 const _ = require('lodash');
 
 //checking file path
@@ -88,8 +89,8 @@ router.post('/api/ads/warning', async (req, res) => {
     }
   );
   const contact = {
-    to: 'roylen@raker.nl',
-    from: 'no-reply@roylen.net',
+    to: mails.contact,
+    from: mails['no-reply'],
     subject: 'Message from contact form Roylen',
     text: `Hey admin,\n\nThere was a warning regarding ad with id: ${adId}.\n\n${dbMessage}`,
     html: `<p>Hey admin,</p><p>There was a warning regarding ad with id: ${adId}</p><p>${dbMessage}</p>`,
@@ -200,7 +201,7 @@ router.get('/api/ads/c/:category', async (req, res) => {
 });
 
 router.post('/api/ads/filter', async (req, res) => {
-  mongoose.set('debug', true);
+  // mongoose.set('debug', true);
   // console.log(req.body);
   const {
     mainCategory,

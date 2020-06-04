@@ -1,10 +1,6 @@
 # private info
-keys.js
-sendgrid.js
-sendgrid.env
-admin.js
-db.js
-apikey.js
+
+env
 .DS_Store
 # user generated
 uploads

@@ -5,6 +5,7 @@ const Ad = mongoose.model('Ad');
 const Offer = mongoose.model('Offer');
 const User = mongoose.model('User');
 const sgMail = require('@sendgrid/mail');
+const mails = require('../env/mail_list');
 
 const router = express.Router();
 
@@ -82,7 +83,7 @@ router.post('/api/offers/accept', gatekeeper, async (req, res) => {
 
         const acceptedEmail = {
           to: fromUserEmail,
-          from: 'no-reply@roylen.net',
+          from: mails['no-reply'],
           subject: 'Je bod is geaccepteerd',
           text:
             'Beste, \n\nJe bod op ' +

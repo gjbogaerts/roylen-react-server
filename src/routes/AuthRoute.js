@@ -8,6 +8,7 @@ const User = mongoose.model('User');
 const SendGridKey = require('../env/sendgrid');
 const crypto = require('crypto');
 const sgMail = require('@sendgrid/mail');
+const mails = require('../env/mail_list');
 sgMail.setApiKey(SendGridKey);
 
 //checking file path
@@ -96,7 +97,7 @@ router.post('/api/resetPassword', async (req, res) => {
       if (doc.nModified === 1) {
         const msg = {
           to: email,
-          from: 'do-not-reply@roylen.net',
+          from: mails['no-reply'],
           subject: 'Reset your password',
           text: `Dear Roylen-user,\n\nsomebody, maybe you, has requested a new password to access the Roylen app. Please open the app, click the 'reset password' button on the login-page, and use the key provided here to reset your password.\n\n__________________________\n\nKey:${secretKey}\n\n__________________________\n\nTake care, you can only use this key once! \n\nWith kind regards,\nThe Roylen Team\n\nPS: you didn't ask for your password to reset? You don't need to do anything, your account is safe.\nPPS: You can't reply to this mail; your reply will get lost in the great empty void of bits and data on the internet...`,
           html: `<p>Dear Roylen-user,</p><p>Somebody, maybe you, has requested a new password to access the Roylen app. Please open the app, click the 'reset password' button on the login-page, and use the key provided here to reset your password.</p><p><hr /><p>Key:<br />${secretKey}</p><hr /><p>Take care, you can only use this key once!</p><p>With kind regards,</p><p>The Roylen Team</p><p>PS: you didn't ask for your password to reset? You don't need to do anything, your account is safe.</p><p>PPS: You can't reply to this mail; your reply will get lost in the great empty void of bits and data on the internet...</p>`,
