@@ -125,16 +125,18 @@ router.post('/api/resetPassword', async (req, res) => {
 
 router.post('/api/favorite', async (req, res) => {
   const { userId, adId } = req.body;
+  const currUser = await User.findById(userId);
+  let favAds = currUser.favoriteAds;
+  if (favAds.includes(adId)) {
+    favAds = favAds.filter((ad) => adId != ad._id);
+  } else {
+    favAds.push(adId);
+  }
   try {
-    User.findByIdAndUpdate(
-      userId,
-      { $push: { favoriteAds: adId } },
-      (err, doc) => {
-        console.log(err, doc);
-        if (err) return send422(res);
-        return res.status(200).send({ user: doc });
-      }
-    );
+    currUser.updateOne({ favoriteAds: favAds }, (err, doc) => {
+      if (err) return send422(res);
+      return res.status(200).send({ user: doc });
+    });
   } catch (err) {
     return send422(res);
   }
@@ -154,8 +156,8 @@ router.post('/api/signin', async (req, res) => {
   try {
     await user.comparePassword(password);
     const token = jwt.sign({ userId: user._id }, JWTKey);
-    console.log(user.toJSON());
-    console.log(token);
+    // console.log(user.toJSON());
+    // console.log(token);
     res.send({ ...user.toJSON(), token });
   } catch (err) {
     return send422(res);
