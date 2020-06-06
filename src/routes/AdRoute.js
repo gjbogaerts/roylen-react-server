@@ -263,16 +263,23 @@ router.post('/api/ads/filter', async (req, res) => {
 
 //search
 router.get('/api/ads/q/:q', async (req, res) => {
+  const q = new RegExp(req.params.q, 'gi');
   try {
-    Ad.find({ $text: { $search: req.params.q } })
-      .where({ isActive: true })
+    let query = Ad.find({ isActive: true })
+      .or([
+        { title: q },
+        { description: q },
+        { mainCategory: q },
+        { subCategory: q },
+        { subSubCategory: q },
+      ])
       .populate('creator')
       .populate({ path: 'offers', populate: { path: 'fromUser' } })
-      .sort('-dateAdded')
-      .exec((err, doc) => {
-        if (err) return res.status(422).send(err, 'Could not fetch the ads');
-        res.send(doc);
-      });
+      .sort('-dateAdded');
+    query.exec((err, doc) => {
+      if (err) return res.status(422).send(err, 'Could not fetch the ads');
+      res.send(doc);
+    });
   } catch (err) {
     res.status(422).send(err, 'Could not fetch the ads');
   }

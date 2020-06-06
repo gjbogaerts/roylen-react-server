@@ -89,6 +89,18 @@ const AdSchema = new mongoose.Schema({
   },
 });
 
-AdSchema.index({ title: 'text', description: 'text' });
+AdSchema.index(
+  {
+    title: 'text',
+    description: 'text',
+    mainCategory: 'text',
+    subCategory: 'text',
+    subSubCategory: 'text',
+  },
+  {
+    name: 'searchIndex',
+    weights: { title: 10, description: 5, subSubCategory: 5 },
+  }
+);
 
 mongoose.model('Ad', AdSchema);
