@@ -62,10 +62,14 @@ router.post('/api/adCreate', upload.any(), gatekeeper, async (req, res) => {
       coordinates: [longitude, latitude],
     },
   });
+  // console.log(ad);
   try {
-    await ad.save({}, (err, doc) => {
-      if (err) res.status(422).send(`Unable to create ad: ${err}`);
-      res.send({ msg: 'Success, ad created', doc });
+    ad.save({}, (err, doc) => {
+      if (err) {
+        console.log(err);
+        res.status(422).send(`Unable to create ad: ${err}`);
+      }
+      res.status(200).send({ msg: 'Success, ad created', doc });
     });
   } catch (err) {
     console.log(err);

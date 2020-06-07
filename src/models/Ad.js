@@ -76,7 +76,8 @@ const AdSchema = new mongoose.Schema({
   },
   ageCategory: {
     type: String,
-    enum: ['0-1', '2-4', '5-6', '7-10', '10-12', '12-16'],
+    default: '0-16',
+    enum: ['0-1', '2-4', '5-6', '7-10', '10-12', '12-16', '0-16'],
   },
   city: {
     type: String,
