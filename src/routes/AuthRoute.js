@@ -191,7 +191,7 @@ router.post('/api/profile', upload.any(), gatekeeper, async (req, res) => {
       (err, doc) => {
         // console.log('database', err);
         if (err) return send422(err);
-        return res.send({ success: 1, avatar: doc.avatar });
+        return res.send({ success: 1, doc: doc });
       }
     );
   } catch (err) {
