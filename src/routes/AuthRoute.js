@@ -102,8 +102,8 @@ router.post('/api/resetPassword', async (req, res) => {
           text: `Dear Roylen-user,\n\nsomebody, maybe you, has requested a new password to access the Roylen app. Please open the app, click the 'reset password' button on the login-page, and use the key provided here to reset your password.\n\n__________________________\n\nKey:${secretKey}\n\n__________________________\n\nTake care, you can only use this key once! \n\nWith kind regards,\nThe Roylen Team\n\nPS: you didn't ask for your password to reset? You don't need to do anything, your account is safe.\nPPS: You can't reply to this mail; your reply will get lost in the great empty void of bits and data on the internet...`,
           html: `<p>Dear Roylen-user,</p><p>Somebody, maybe you, has requested a new password to access the Roylen app. Please open the app, click the 'reset password' button on the login-page, and use the key provided here to reset your password.</p><p><hr /><p>Key:<br />${secretKey}</p><hr /><p>Take care, you can only use this key once!</p><p>With kind regards,</p><p>The Roylen Team</p><p>PS: you didn't ask for your password to reset? You don't need to do anything, your account is safe.</p><p>PPS: You can't reply to this mail; your reply will get lost in the great empty void of bits and data on the internet...</p>`,
         };
-        sgMail.send(msg, false, (err, result) => {
-          if (err) return res.status(422).send({ error: err });
+        sgMail.send(msg, false, (error, result) => {
+          if (error) return res.status(422).send({ error: error });
           return res.status(200).send({
             result,
             success: 1,
@@ -170,12 +170,10 @@ router.post('/api/profile', upload.any(), gatekeeper, async (req, res) => {
     if (req.files && req.files.length > 0) {
       // imagePath = upload.storage;
       imagePath = dbAvatarUri + req.files[0]['filename'];
-    } else {
-      imagePath = '/uploads/pics/statics/image9.jpeg';
     }
-    let email = req.user.email;
-    if (req.body['email'] != '') {
-      email = req.body['email'];
+    let { email } = req.body;
+    if (email == '' || email == null) {
+      email = req.user.email;
     }
     const q = { _id: req.user._id };
     let newData;
@@ -187,9 +185,8 @@ router.post('/api/profile', upload.any(), gatekeeper, async (req, res) => {
     User.findByIdAndUpdate(
       q,
       newData,
-      { useFindAndModify: false },
+      { useFindAndModify: false, returnOriginal: false },
       (err, doc) => {
-        // console.log('database', err);
         if (err) return send422(err);
         return res.send({ success: 1, doc: doc });
       }
