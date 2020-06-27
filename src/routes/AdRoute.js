@@ -25,6 +25,69 @@ fs.mkdir(uploadDir, { recursive: true }, (err) => {
   // console.log(uploadDir + ' created');
 });
 
+router.post('/api/ads/removePic', gatekeeper, async (req, res) => {
+  const { adId, picUri } = req.body;
+  try {
+    Ad.findById(adId, (err, doc) => {
+      if (err) {
+        console.log('1: ', err);
+        return res.status(422).send(`Error: ${err}`);
+      }
+      let pics = doc.pics;
+      pics = pics.filter((pic) => pic != picUri);
+      doc.updateOne({ pics: pics }, (err2, doc2) => {
+        if (err2) {
+          console.log('2: ', err2);
+          return res.status(422).send(`Error: ${err2}`);
+        }
+        fs.unlink(__baseDir + picUri, (err3) => {
+          if (err3) {
+            console.log('3: ', err3);
+            return res.status(422).send(`Error deleting file: ${err3}`);
+          }
+          return res.status(200).send('OK');
+        });
+      });
+    });
+  } catch (err) {
+    return res.status(422).send(`Error: ${err}`);
+  }
+});
+
+router.post('/api/ads/addPic', upload.any(), gatekeeper, async (req, res) => {
+  const { adId } = req.body;
+  const pics = [];
+  req.files.map((file) => {
+    return pics.push(dbPicUri + file.filename);
+  });
+  const ad = await Ad.findById(adId);
+  let curPics = ad.pics;
+  let newPics = pics.concat(curPics);
+  let uniqPics = [...new Set(newPics)];
+  ad.pics = uniqPics;
+  ad.save((err, __) => {
+    if (err) {
+      console.log(err);
+      return res.status(422).send(`Error: ${err}`);
+    }
+    return res.status(200).send('OK');
+  });
+});
+
+router.post('/api/ads/update', gatekeeper, async (req, res) => {
+  const { adId } = req.body;
+  try {
+    Ad.findByIdAndUpdate(adId, req.body, { new: true }, (err, doc) => {
+      if (err) {
+        return res.status(422).send(err);
+      }
+      return res.status(200).send(doc);
+    });
+  } catch (err) {
+    return res.status(422).send(err);
+  }
+});
+
 router.post('/api/adCreate', upload.any(), gatekeeper, async (req, res) => {
   // console.log(req.files);
   // console.log(JSON.parse(JSON.stringify(req.body)));
@@ -218,7 +281,7 @@ router.post('/api/ads/filter', async (req, res) => {
     latitude,
     longitude,
   } = req.body;
-  console.log(req.body);
+  // console.log(req.body);
   try {
     const q = Ad.find();
     if (Boolean(subSubCategory)) {
