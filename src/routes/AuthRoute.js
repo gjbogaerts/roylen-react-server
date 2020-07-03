@@ -88,9 +88,8 @@ router.post('/api/confirmResetPassword', async (req, res) => {
 });
 
 router.post('/api/resetPassword', async (req, res) => {
-  const { email, resetLink } = req.body;
+  const { email, resetLink, secretKey } = req.body;
   // console.log(req.body);
-  const secretKey = crypto.randomBytes(20).toString('hex');
   const finalLink = `${resetLink}&key=${secretKey}`;
   try {
     User.updateOne({ email }, { pwResetKey: secretKey }, (err, doc) => {
